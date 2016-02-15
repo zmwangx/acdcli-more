@@ -6,24 +6,15 @@ calculating the total size of a tree. There is a console script
 ``acdcli-trees`` associated to this module.
 """
 
-# TODO: Handle global arguments in the env var ACDCLI_GLOBAL_OPTS.
-
 import argparse
 import logging
 import os
 import sys
 
-import acd_cli
 from acdcli.cache import db, format
-import appdirs
 from zmwangx.humansize import humansize
 
-_app_name = 'acd_cli'
-
-logger = logging.getLogger(_app_name)
-
-cp = os.environ.get('ACD_CLI_CACHE_PATH')
-CACHE_PATH = cp if cp else appdirs.user_cache_dir(_app_name)
+from acdcli_more import shared
 
 class NodeCache(db.NodeCache):
 
@@ -72,7 +63,8 @@ class NodeCache(db.NodeCache):
 
 
 def main():
-    format.init(format.ColorMode['auto'])
+    shared.acd_cli.db.NodeCache = NodeCache
+    args = shared.init()
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--include-trash', '-t', action='store_true')
@@ -87,14 +79,11 @@ def main():
     parser.add_argument('-P', '--progress', action='store_true',
                         help="""show progress information when gathering information""")
     parser.add_argument('node', nargs='?', default='/', help='root directory for the tree')
-    args = parser.parse_args()
+    args = parser.parse_args(namespace=args)
 
-    cache = NodeCache(CACHE_PATH, check=db.NodeCache.IntegrityCheckType['none'])
-    acd_cli.cache = cache
+    shared.resolve_remote_path_args(args, ['node'])
 
-    acd_cli.resolve_remote_path_args(args, ['node'])
-
-    node = cache.get_node(args.node)
+    node = shared.cache.get_node(args.node)
     kwargs = {
         'trash': args.include_trash,
         'dir_only': args.dir_only,
@@ -104,7 +93,7 @@ def main():
         'base10': args.si,
         'progress': args.progress,
     }
-    tree_size, lines = cache.trees_format(node, **kwargs)
+    tree_size, lines = shared.cache.trees_format(node, **kwargs)
 
     if args.progress:
         sys.stderr.write('\n')
