@@ -47,4 +47,7 @@ setup(
             'acdcli-trees=acdcli_more.trees:main',
         ]
     },
+    dependency_links = [
+        'git+https://github.com/zmwangx/pyzmwangx.git@master#egg=zmwangx-0.1.57',
+    ],
 )
