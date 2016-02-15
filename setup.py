@@ -44,6 +44,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
+            'acdcli-md5sum=acdcli_more.md5sum:main',
             'acdcli-trees=acdcli_more.trees:main',
         ]
     },

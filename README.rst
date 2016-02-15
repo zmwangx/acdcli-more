@@ -16,6 +16,8 @@ converts external commands of the form ``acdcli-command`` into subcommands of
 Commands
 ========
 
+* ``acdcli-md5sum``: Extracts MD5 digests of file nodes.
+
 * ``acdcli-trees``: Like `tree`, but print sizes of each node, including
   directory nodes. The size of a directory node is the sum of its children's
   sizes.
